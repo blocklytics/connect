@@ -1,0 +1,51 @@
+# DelegableMiniMeToken
+- kind: ethereum/contract
+  {{#name}}
+  name: {{name}}
+  {{/name}}
+  {{^name}}
+  name: DelegableMiniMeToken
+  {{/name}}
+  network: {{network}}
+  source:
+    abi: DelegableMiniMeToken
+    {{#address}}
+    address: '{{address}}'
+    {{/address}}
+    {{#startBlock}}
+    startBlock: {{startBlock}}
+    {{/startBlock}}
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.1
+    language: wasm/assemblyscript
+    entities:
+      - NoEnt
+    abis:
+      - name: DAOFactory
+        file: ./abis/DAOFactory.json
+      - name: DAOKit
+        file: ./abis/DAOKit.json
+      - name: DAOTemplate
+        file: ./abis/DAOTemplate.json
+      - name: Kernel
+        file: ./abis/Kernel.json
+      - name: DelegableMiniMeToken
+        file: ./abis/DelegableMiniMeToken.json
+      - name: DelegableMiniMeTokenFactory
+        file: ./abis/DelegableMiniMeTokenFactory.json
+    eventHandlers:
+      - event: ClaimedTokens(indexed address,indexed address,uint256)
+        handler: handleClaimedTokens
+      - event: Transfer(indexed address,indexed address,uint256)
+        handler: handleTransfer
+      - event: NewCloneToken(indexed address,uint256)
+        handler: handleNewCloneToken
+      - event: Approval(indexed address,indexed address,uint256)
+        handler: handleApproval
+      - event: Delegate(indexed address,indexed address,uint256)
+        handler: handleDelegate
+      - event: UnDelegate(indexed address,indexed address,uint256)
+        handler: handleUnDelegate
+    file: ./src/aragon/mappings/DelegableMiniMeToken.ts
+

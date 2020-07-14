@@ -1,0 +1,54 @@
+{
+  "network": "rinkeby",
+  "dataSources": {
+    "Organizations": [],
+    "OrganizationFactories": [
+      {
+        "name": "DAOFactory@0.8.1",
+        "address": "0x89d87269527495ac29648376d4154ba55c4872fc",
+        "startBlock": 5922866
+      },
+      {
+        "name": "DAOFactory@0.8",
+        "address": "0xad4d106b43b480faa3ef7f98464ffc27fc1faa96",
+        "startBlock": 5026118
+      }
+    ],
+    "OrganizationTemplates": [
+      {
+        "name": "delegable-voting.open.aragonpm.eth@1.0.0",
+        "address": "0x9B166bBf989887375EE5b201415Ae58ff4B99E6f",
+        "startBlock": 6819075
+      }
+    ],
+    "LegacyOrganizationTemplates": [
+      {
+        "name": "bare-kit.aragonpm.eth@1.0.0",
+        "address": "0x204b52317f23AEE87e440905059d6bD0a7B0104D",
+        "startBlock": 3633430
+      },
+      {
+        "name": "democracy-kit@1.0.0",
+        "address": "0x89D31C0AFD8367960fc0c9d11225630d4944550E",
+        "startBlock": 3229645
+      },
+      {
+        "name": "democracy-kit@2.0.0",
+        "address": "0xB99DE66D3dCEEe078071D67D18FBBae1Cb44eC2B",
+        "startBlock": 4221693
+      },
+      {
+        "name": "multisig-kit.aragonpm.eth@1.0.0",
+        "address": "0x01F2e9CDAac527Ffef1B9869d4C0B33357c0A2Bc",
+        "startBlock": 3229673
+      },
+      {
+        "name": "multisig-kit.aragonpm.eth@2.0.0",
+        "address": "0xC00EAD10F0A097C71f4b7999530A1F2d9E92a8a5",
+        "startBlock": 4221706
+      }
+    ],
+    "TokenFactories": [],
+    "Tokens": []
+  }
+}
