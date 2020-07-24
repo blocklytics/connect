@@ -111,7 +111,7 @@ export function createDepartment(appAddress: Address, appId: string): void {
       token.symbol = fetchTokenSymbol(deptTokenAddress)
       token.decimals = fetchTokenDecimals(deptTokenAddress)
       token.totalSupply = ZERO_BI
-      token.department = deptTokenAddress.toHex()
+      token.department = appAddress.toHexString()
       token.save()
     }
     department.org = deptContract.kernel().toHex()

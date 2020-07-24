@@ -30,8 +30,6 @@
       - DelegationBalance
       - DelegationHistory
     abis:
-      - name: DAOFactory
-        file: ./abis/DAOFactory.json
       - name: DAOTemplate
         file: ./abis/DAOTemplate.json
       - name: Kernel

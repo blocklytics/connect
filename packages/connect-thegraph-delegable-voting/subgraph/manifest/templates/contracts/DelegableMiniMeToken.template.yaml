@@ -30,12 +30,12 @@
       - DelegationBalance
       - DelegationHistory
     abis:
-      - name: DAOFactory
-        file: ./abis/DAOFactory.json
       - name: DAOTemplate
         file: ./abis/DAOTemplate.json
       - name: Kernel
         file: ./abis/Kernel.json
+      - name: DelegableVoting
+        file: ./abis/DelegableVoting.json
       - name: DelegableMiniMeToken
         file: ./abis/DelegableMiniMeToken.json
       - name: DelegableMiniMeTokenFactory

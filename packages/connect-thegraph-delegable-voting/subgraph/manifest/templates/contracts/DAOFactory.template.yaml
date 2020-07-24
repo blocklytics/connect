@@ -31,6 +31,8 @@
         file: ./abis/MiniMeToken.json
       - name: MiniMeTokenFactory
         file: ./abis/MiniMeTokenFactory.json
+      - name: DelegableVoting
+        file: ./abis/DelegableVoting.json
       - name: DelegableMiniMeToken
         file: ./abis/DelegableMiniMeToken.json
       - name: DelegableMiniMeTokenFactory
