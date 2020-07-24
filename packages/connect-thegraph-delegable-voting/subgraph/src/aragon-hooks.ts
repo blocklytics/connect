@@ -1,4 +1,5 @@
 import { Address } from '@graphprotocol/graph-ts'
+import { createLiquidDemocracy, createDepartment } from './aragon/helpers'
 
 /*
  * Called when an app proxy is detected.
@@ -17,8 +18,10 @@ export function getTemplateForApp(appId: string): string | null {
   }
 }
 
-export function onOrgTemplateCreated(orgAddress: Address): void {}
+export function onOrgTemplateCreated(orgAddress: Address): void {
+  const newLiquidDemocracy = createLiquidDemocracy(orgAddress)
+}
 export function onAppTemplateCreated(appAddress: Address, appId: string): void {
-  // 
+  const newDepartment = createDepartment(appAddress) 
 }
 export function onTokenTemplateCreated(tokenAddress: Address): void {}

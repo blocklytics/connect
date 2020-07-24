@@ -1,42 +1,5 @@
-[
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_appId",
-        "type": "bytes32"
-      },
-      {
-        "name": "_roles",
-        "type": "bytes32[]"
-      },
-      {
-        "name": "_authorizedAddress",
-        "type": "address"
-      },
-      {
-        "name": "_initializeCallData",
-        "type": "bytes"
-      }
-    ],
-    "name": "newInstance",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "newInstance",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
+[{
+    "inputs": [{
         "name": "_daoFactory",
         "type": "address"
       },
@@ -59,44 +22,37 @@
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "dao",
-        "type": "address"
-      }
-    ],
+    "inputs": [{
+      "indexed": false,
+      "name": "dao",
+      "type": "address"
+    }],
     "name": "DeployDao",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "dao",
-        "type": "address"
-      }
-    ],
+    "inputs": [{
+      "indexed": false,
+      "name": "dao",
+      "type": "address"
+    }],
     "name": "SetupDao",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "token",
-        "type": "address"
-      }
-    ],
+    "inputs": [{
+      "indexed": false,
+      "name": "token",
+      "type": "address"
+    }],
     "name": "DeployToken",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
+    "inputs": [{
         "indexed": false,
         "name": "appProxy",
         "type": "address"
@@ -109,5 +65,146 @@
     ],
     "name": "InstalledApp",
     "type": "event"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_managementTokenName",
+        "type": "string"
+      },
+      {
+        "name": "_managementTokenSymbol",
+        "type": "string"
+      },
+      {
+        "name": "_managementTokenDecimals",
+        "type": "uint8"
+      },
+      {
+        "name": "_managementTokensTransferable",
+        "type": "bool"
+      },
+      {
+        "name": "_managementTokensDelegable",
+        "type": "bool"
+      },
+      {
+        "name": "_managementVotingSettings",
+        "type": "uint64[3]"
+      },
+      {
+        "name": "_managementMaxTokens",
+        "type": "uint256"
+      }
+    ],
+    "name": "prepareInstance",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_tokenName",
+        "type": "string"
+      },
+      {
+        "name": "_tokenSymbol",
+        "type": "string"
+      },
+      {
+        "name": "_tokenDecimals",
+        "type": "uint8"
+      },
+      {
+        "name": "_tokenTransferable",
+        "type": "bool"
+      },
+      {
+        "name": "_tokenDelegable",
+        "type": "bool"
+      },
+      {
+        "name": "_votingSettings",
+        "type": "uint64[3]"
+      },
+      {
+        "name": "_maxTokens",
+        "type": "uint256"
+      }
+    ],
+    "name": "installDepartment",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_deptTokenHolders",
+        "type": "address[]"
+      },
+      {
+        "name": "_deptStakes",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "distributeDepartmentTokens",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_id",
+        "type": "string"
+      },
+      {
+        "name": "_managementTokenHolders",
+        "type": "address[]"
+      },
+      {
+        "name": "_managementStakes",
+        "type": "uint256[]"
+      },
+      {
+        "name": "_financePeriod",
+        "type": "uint64"
+      },
+      {
+        "name": "_useAgentAsVault",
+        "type": "bool"
+      }
+    ],
+    "name": "finalizeInstance",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_acl",
+        "type": "address"
+      },
+      {
+        "name": "_mgmtTokenManager",
+        "type": "address"
+      },
+      {
+        "name": "_mgmtVotingApp",
+        "type": "address"
+      }
+    ],
+    "name": "_grantManagementPrivileges",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
   }
 ]

@@ -24,8 +24,6 @@
     abis:
       - name: DAOFactory
         file: ./abis/DAOFactory.json
-      - name: DAOKit
-        file: ./abis/DAOKit.json
       - name: DAOTemplate
         file: ./abis/DAOTemplate.json
       - name: Kernel

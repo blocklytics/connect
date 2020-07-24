@@ -1,8 +1,8 @@
 type Vote @entity {
   id: ID!
-  orgAddress: Bytes!
-  appAddress: Bytes!
-  creator: Bytes! # TODO - Derive from AppUser
+  org: LiquidDemocracy!
+  department: Department!
+  creator: DepartmentMember!
   metadata: String!
   executed: Boolean!
   startDate: BigInt!
@@ -14,30 +14,21 @@ type Vote @entity {
   votingPower: BigInt!
   script: Bytes!
   voteNum: BigInt!
-  casts: [Cast!]! # TODO - why isn't this derived from voteId instead?
+  casts: [Cast!]! @derivedFrom(field: "vote")
 }
 
 type Cast @entity {
   id: ID!
-  voteId: Vote! # NOTE - changed from ID
+  vote: Vote!
   voteNum: BigInt!
-  voter: Bytes! # TODO - Derive from AppUser
+  voter: DepartmentMember!
   supports: Boolean!
   voterStake: BigInt! # TODO - change to VoterPower???
-  vote: Vote! @derivedFrom(field: "casts")
 }
 
 type LiquidDemocracy @entity {
   id: ID!                              # orgAddress
-  # version
-  appAddress: [Bytes!]! # May include many apps from Aragon ecosystem
-  installedApps: [InstallApp]! @derivedFrom(field: "orgAddress")
-}
-
-type InstalledApp @entity {
-  id: ID!                              # appAddress
-  # appId: String!                       # Description
-  orgAddress: LiquidDemocracy!
+  departments: [Department]! @derivedFrom(field: "org")
 }
 
 type Token @entity {
@@ -46,27 +37,30 @@ type Token @entity {
   decimals: BigInt!
   symbol: String!
   totalSupply: BigInt!
+  department: Department @derivedFrom(field: "token")
 }
 
-type DelegableVotingApp @entity {
-  id: ID!                              # appAddress
-  delegableToken: Token!
-  tokenManager: InstalledApp!
+type Department @entity {
+  id: ID!
+  name: String!
+  org: LiquidDemocracy!
+  appId: Bytes!
+  token: Token!
   supportRequiredPct: BigInt!
   minAcceptQuorum: BigInt!
-  votes: [Vote]! @derivedFrom(field: "appAddress")
-  users: [AppUser]! @derivedFrom(field: "appAddress")
+  votes: [Vote]! @derivedFrom(field: "department")
+  members: [DepartmentMember]! @derivedFrom(field: "department")
 }
 
 type User @entity {
   id: ID! # Ethereum address
-  apps: [AppUser]! @derivedFrom(field: "user")
+  departments: [DepartmentMember]! @derivedFrom(field: "user")
 }
 
-type AppUser @entity {
-  id: ID! # appAddress + Ethereum address
+type DepartmentMember @entity {
+  id: ID! # appAddress + "-" + Ethereum address
   user: User!
-  appAddress: DelegableVotingApp!
+  department: Department!
   votingPower: BigInt!
   votingPowerPercent: BigDecimal!
   currentTokenBalance: BigInt!
@@ -81,24 +75,23 @@ type AppUser @entity {
 
 type DelegationBalance @entity {
   id: ID!                                 # from-to
-  from: AppUser!
-  to: AppUser!
+  from: DepartmentMember!
+  to: DepartmentMember!
   currentBalance: BigInt!
   # history: [DelegationHistory]! @derivedFrom(field: "delegationBalanceId")
 }
 
 type DelegationHistory @entity {
   id: ID!                                 # from-to-block-logIndex
-  from: AppUser!
-  to: AppUser!
+  from: DepartmentMember!
+  to: DepartmentMember!
   # delegationBalanceId: DelegationBalance!
   amount: BigInt!                         # Negative values = UnDelegation
   newBalance: BigInt!
   delegatedAtBlock: BigInt!
   delegatedAtLogIndex: BigInt!
   delegatedAtTimestamp: BigInt!
-  delegatedAtTransaction: Byte!
-
+  delegatedAtTransaction: Bytes!
 }
 
 type AragonInfo @entity {

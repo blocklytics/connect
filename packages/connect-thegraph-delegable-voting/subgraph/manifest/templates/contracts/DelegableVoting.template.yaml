@@ -1,14 +1,14 @@
-# Kernel
+# DelegableVoting
 - kind: ethereum/contract
   {{#name}}
   name: {{name}}
   {{/name}}
   {{^name}}
-  name: Kernel
+  name: DelegableVoting
   {{/name}}
   network: {{network}}
   source:
-    abi: Kernel
+    abi: DelegableVoting
     {{#address}}
     address: '{{address}}'
     {{/address}}
@@ -36,15 +36,18 @@
         file: ./abis/DAOTemplate.json
       - name: Kernel
         file: ./abis/Kernel.json
-      - name: MiniMeToken
-        file: ./abis/MiniMeToken.json
-      - name: MiniMeTokenFactory
-        file: ./abis/MiniMeTokenFactory.json
+      - name: DelegableVoting
+        file: ./abis/DelegableVoting.json
       - name: DelegableMiniMeToken
         file: ./abis/DelegableMiniMeToken.json
       - name: DelegableMiniMeTokenFactory
         file: ./abis/DelegableMiniMeTokenFactory.json
     eventHandlers:
-      - event: NewAppProxy(address,bool,bytes32)
-        handler: handleNewAppProxy
-    file: ./src/aragon/mappings/Kernel.ts
+      - event: StartVote(indexed uint256,indexed address,string)
+        handler: handleStartVote
+      - event: CastVote(indexed uint256,indexed address,bool,uint256)
+        handler: handleCastVote
+      - event: ExecuteVote(indexed uint256)
+        handler: handleExecuteVote
+    file: ./src/DelegableVoting.ts
+

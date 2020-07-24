@@ -28,7 +28,6 @@ export function processApp(appAddress: Address, appId: string): void {
 
 export function processToken(tokenAddress: Address): void {
   if (!_isRegistered(tokenAddress, 'token')) {
-    // MiniMeTokenTemplate.create(tokenAddress)
     DelegableMiniMeTokenTemplate.create(tokenAddress)
     hooks.onTokenTemplateCreated(tokenAddress)
 
