@@ -33,11 +33,7 @@ export function handleCastVote(event: CastVoteEvent): void {
 
   _populateCastDataFromEvent(cast, event)
   cast.voteNum = vote.voteNum
-  cast.voteId = vote.id
-
-  let casts = vote.casts
-  casts.push(castId)
-  vote.casts = casts
+  cast.vote = vote.id
 
   if (event.params.supports == true) {
     vote.yea = vote.yea.plus(event.params.stake)
@@ -94,17 +90,17 @@ function _populateVoteDataFromContract(vote: VoteEntity, appAddress: Address, vo
   vote.nay = voteData.value7
   vote.votingPower = voteData.value8
   vote.script = voteData.value9
-  vote.orgAddress = voting.kernel()
-  vote.appAddress = appAddress
+  vote.org = voting.kernel().toHex()
+  vote.department = appAddress.toHex()
 }
 
 function _populateVoteDataFromEvent(vote: VoteEntity, event: StartVoteEvent): void {
-  vote.creator = event.params.creator
+  vote.creator = event.address.toHexString() + "-" + event.params.creator.toHex()
   vote.metadata = event.params.metadata
 }
 
 function _populateCastDataFromEvent(cast: CastEntity, event: CastVoteEvent): void {
-  cast.voter = event.params.voter
+  cast.voter = event.params.voter.toHex()
   cast.supports = event.params.supports
   cast.voterStake = event.params.stake
 }

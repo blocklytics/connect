@@ -1,5 +1,5 @@
-import { log, BigInt, BigDecimal, Address, Bytes } from '@graphprotocol/graph-ts'
-import { LiquidDemocracy, User, DepartmentMember, Department, Token } from '../../generated/schema'
+import { log, BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
+import { LiquidDemocracy, User, DepartmentMember, Department, Token, DelegationBalance } from '../../generated/schema'
 import { DelegableMiniMeToken } from '../../generated/liquid-democracy-template.open.aragonpm.eth@17.0.0/DelegableMiniMeToken'
 import { DelegableVoting } from '../../generated/liquid-democracy-template.open.aragonpm.eth@17.0.0/DelegableVoting'
 
@@ -74,27 +74,30 @@ export function fetchTokenName(tokenAddress: Address): string {
   return nameValue
 }
 
-export function fetchTokenDecimals(tokenAddress: Address): i32 {
+export function fetchTokenDecimals(tokenAddress: Address): BigInt {
   const contract = DelegableMiniMeToken.bind(tokenAddress)
   let decimalValue = null
   const decimalResult = contract.try_decimals()
   if (!decimalResult.reverted) {
     decimalValue = decimalResult.value
   }
-  return decimalValue
+  return decimalValue as BigInt
 }
 
-export function createLiquidDemocracy(orgAddress: Address): LiquidDemocracy {
+export function createLiquidDemocracy(orgAddress: Address): void {
   let ld = LiquidDemocracy.load(orgAddress.toHexString())
   if (ld === null) {
     ld = new LiquidDemocracy(orgAddress.toHexString())
     ld.save()
   }
-  if (ld == null) log.error("LiquidDemocracy is null", [orgAddress.toHexString()])
-  return ld as LiquidDemocracy
+  if (ld == null) {
+    log.error("LiquidDemocracy is null", [orgAddress.toHexString()])
+  } else {
+    log.debug("Created LiquidDemocracy: ", [orgAddress.toHex()])
+  }
 }
 
-export function createDepartment(appAddress: Address, appId: string): Department {
+export function createDepartment(appAddress: Address, appId: string): void {
   let department = Department.load(appAddress.toHexString())
   if (department === null) {
     department = new Department(appAddress.toHexString())
@@ -112,15 +115,36 @@ export function createDepartment(appAddress: Address, appId: string): Department
       token.save()
     }
     department.org = deptContract.kernel().toHex()
-    department.name = tokenName.replace(/ token|token| coin|coin/ig, "")
-    department.appId = Bytes.fromHexString(appId)
+    department.name = tokenName
+    department.appId = appId
     department.supportRequiredPct = deptContract.supportRequiredPct()
     department.minAcceptQuorum = deptContract.minAcceptQuorumPct()
     department.voteDuration = deptContract.voteTime()
     department.save()
   }
-  if (department == null) log.error("Department is null", [appAddress.toHexString()])
-  return department as Department
+  if (department == null) {
+    log.error("Department is null", [appAddress.toHexString()])
+  } else {
+    log.debug("Created Department: ", [appAddress.toHex()])
+  }
+
+}
+
+export function createToken(tokenAddress: Address): void {
+  let token = Token.load(tokenAddress.toHex())
+  if (token === null) {
+    token = new Token(tokenAddress.toHex())
+    token.name = fetchTokenName(tokenAddress)
+    token.symbol = fetchTokenSymbol(tokenAddress)
+    token.decimals = fetchTokenDecimals(tokenAddress)
+    token.totalSupply = ZERO_BI
+    token.save()
+  }
+  if (token == null) {
+    log.error("Token is null", [tokenAddress.toHexString()])
+  } else {
+    log.debug("Created Token: ", [tokenAddress.toHex()])
+  }
 }
 
 export function createDepartmentMember(department: Address, user: Address): DepartmentMember {
@@ -137,12 +161,12 @@ export function createDepartmentMember(department: Address, user: Address): Depa
     departmentMember.currentAmountDelegatedTo = ZERO_BI
     departmentMember.save()
   }
-  if (departmentMember == null) log.error("DepartmentMember is null", [id])
+  if (departmentMember == null) {
+    log.error("DepartmentMember is null", [id])
+  } else {
+    log.debug("Created DepartmentMember: ", [id])
+  }
   return departmentMember as DepartmentMember
-}
-
-export function votingPowerPercent(votingPower: BigInt, totalSupply: BigInt): BigDecimal {
-  return BigDecimal.fromString(votingPower.toString()).div(BigDecimal.fromString(totalSupply.toString()))
 }
 
 export function createUser(address: Address): void {
@@ -151,6 +175,33 @@ export function createUser(address: Address): void {
     user = new User(address.toHexString())
     user.save()
   }
+  if (user == null) {
+    log.error("User is null", [address.toHex()])
+  } else {
+    log.debug("Created User: ", [address.toHex()])
+  }
+}
+
+export function createDelegationBalance(from: Address, to: Address): DelegationBalance {
+  const id = from.toHexString() + "-" + to.toHexString()
+  let balance = DelegationBalance.load(id)
+  if (balance === null) {
+    balance = new DelegationBalance(id)
+    balance.from = from.toHexString()
+    balance.to = to.toHexString()
+    balance.currentBalance = ZERO_BI
+    balance.save()
+  }
+  if (balance == null) {
+    log.error("DelegationBalance is null", [id])
+  } else {
+    log.debug("Created DelegationBalance: ", [id])
+  }
+  return balance as DelegationBalance
+}
+
+export function votingPowerPercent(votingPower: BigInt, totalSupply: BigInt): BigDecimal {
+  return BigDecimal.fromString(votingPower.toString()).div(BigDecimal.fromString(totalSupply.toString()))
 }
 
 export function oneBigInt(): BigInt {

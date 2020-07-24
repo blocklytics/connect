@@ -4,6 +4,7 @@
 USER=$1
 NAME=$2
 NETWORK=$3
+TOKEN=$4
 
 # Build manifest
 echo ''
@@ -27,4 +28,4 @@ echo '> Deploying subgraph: '$FULLNAME
 graph deploy $FULLNAME \
   --ipfs https://api.thegraph.com/ipfs/ \
   --node https://api.thegraph.com/deploy/ \
-  --access-token 9dedddc4595c47909b16ada6ea6b8819
+  --access-token $TOKEN

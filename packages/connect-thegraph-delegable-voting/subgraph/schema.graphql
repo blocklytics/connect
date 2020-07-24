@@ -23,7 +23,7 @@ type Cast @entity {
   voteNum: BigInt!
   voter: DepartmentMember!
   supports: Boolean!
-  voterStake: BigInt! # TODO - change to VoterPower???
+  voterStake: BigInt!
 }
 
 type LiquidDemocracy @entity {
@@ -44,7 +44,7 @@ type Department @entity {
   id: ID!
   name: String!
   org: LiquidDemocracy!
-  appId: Bytes!
+  appId: String!
   token: Token!
   supportRequiredPct: BigInt!
   minAcceptQuorum: BigInt!
@@ -79,20 +79,18 @@ type DelegationBalance @entity {
   from: DepartmentMember!
   to: DepartmentMember!
   currentBalance: BigInt!
-  # history: [DelegationHistory]! @derivedFrom(field: "delegationBalanceId")
 }
 
 type DelegationHistory @entity {
-  id: ID!                                 # from-to-block-logIndex
+  id: ID!                                 # from-to:block+logIndex
   from: DepartmentMember!
   to: DepartmentMember!
-  # delegationBalanceId: DelegationBalance!
   amount: BigInt!                         # Negative values = UnDelegation
   newBalance: BigInt!
-  delegatedAtBlock: BigInt!
-  delegatedAtLogIndex: BigInt!
-  delegatedAtTimestamp: BigInt!
-  delegatedAtTransaction: Bytes!
+  blockNumber: BigInt!
+  transactionLogIndex: BigInt!
+  timestamp: BigInt!
+  transaction: Bytes!
 }
 
 type AragonInfo @entity {
