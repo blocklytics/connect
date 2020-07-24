@@ -2,6 +2,8 @@ import { log, BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
 import { LiquidDemocracy, User, DepartmentMember, Department, Token, DelegationBalance } from '../../generated/schema'
 import { DelegableMiniMeToken } from '../../generated/liquid-democracy-template.open.aragonpm.eth@17.0.0/DelegableMiniMeToken'
 import { DelegableVoting } from '../../generated/liquid-democracy-template.open.aragonpm.eth@17.0.0/DelegableVoting'
+import { DelegableMiniMeToken as DelegableMiniMeTokenTemplate } from '../../generated/templates'
+
 
 /************************************
  ********** Helpers ***********
@@ -76,12 +78,8 @@ export function fetchTokenName(tokenAddress: Address): string {
 
 export function fetchTokenDecimals(tokenAddress: Address): BigInt {
   const contract = DelegableMiniMeToken.bind(tokenAddress)
-  let decimalValue = null
-  const decimalResult = contract.try_decimals()
-  if (!decimalResult.reverted) {
-    decimalValue = decimalResult.value
-  }
-  return decimalValue as BigInt
+  let decimalValue = contract.decimals()
+  return BigInt.fromI32(decimalValue)
 }
 
 export function createLiquidDemocracy(orgAddress: Address): void {
@@ -107,11 +105,13 @@ export function createDepartment(appAddress: Address, appId: string): void {
     let token = Token.load(deptTokenAddress.toHex())
     const tokenName = fetchTokenName(deptTokenAddress)
     if (token === null) {
+      DelegableMiniMeTokenTemplate.create(deptTokenAddress)
       token = new Token(deptTokenAddress.toHex())
       token.name = tokenName
       token.symbol = fetchTokenSymbol(deptTokenAddress)
       token.decimals = fetchTokenDecimals(deptTokenAddress)
       token.totalSupply = ZERO_BI
+      token.department = deptTokenAddress.toHex()
       token.save()
     }
     department.org = deptContract.kernel().toHex()
@@ -134,11 +134,17 @@ export function createToken(tokenAddress: Address): void {
   let token = Token.load(tokenAddress.toHex())
   if (token === null) {
     token = new Token(tokenAddress.toHex())
+    log.debug("Fetching name", [tokenAddress.toHex()])
     token.name = fetchTokenName(tokenAddress)
+    log.debug("Fetching symbol", [tokenAddress.toHex()])
     token.symbol = fetchTokenSymbol(tokenAddress)
+    log.debug("Fetching decimals", [tokenAddress.toHex()])
     token.decimals = fetchTokenDecimals(tokenAddress)
+    log.debug("Fetched all token data", [tokenAddress.toHex()])
     token.totalSupply = ZERO_BI
+    log.debug("Set totalSupply", [tokenAddress.toHex()])
     token.save()
+    log.debug("Token entity saved", [tokenAddress.toHex()])
   }
   if (token == null) {
     log.error("Token is null", [tokenAddress.toHexString()])
@@ -202,8 +208,4 @@ export function createDelegationBalance(from: Address, to: Address): DelegationB
 
 export function votingPowerPercent(votingPower: BigInt, totalSupply: BigInt): BigDecimal {
   return BigDecimal.fromString(votingPower.toString()).div(BigDecimal.fromString(totalSupply.toString()))
-}
-
-export function oneBigInt(): BigInt {
-  return BigInt.fromI32(1)
 }

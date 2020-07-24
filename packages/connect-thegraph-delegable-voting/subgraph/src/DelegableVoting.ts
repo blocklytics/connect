@@ -14,6 +14,8 @@ import {
   Cast as CastEntity
 } from '../generated/schema'
 
+import { ONE_BI, ZERO_BI } from './aragon/helpers'
+
 export function handleStartVote(event: StartVoteEvent): void {
   let vote = _getVoteEntity(event.address, event.params.voteId)
 
@@ -26,7 +28,7 @@ export function handleStartVote(event: StartVoteEvent): void {
 export function handleCastVote(event: CastVoteEvent): void {
   let vote = _getVoteEntity(event.address, event.params.voteId)
 
-  let numCasts = vote.casts.length
+  let numCasts = vote.numCasts
 
   let castId = _getCastEntityId(vote, numCasts)
   let cast = new CastEntity(castId)
@@ -40,6 +42,8 @@ export function handleCastVote(event: CastVoteEvent): void {
   } else {
     vote.nay = vote.nay.plus(event.params.stake)
   }
+
+  vote.numCasts = numCasts.plus(ONE_BI)
 
   vote.save()
   cast.save()
@@ -62,13 +66,13 @@ function _getVoteEntity(appAddress: Address, voteNum: BigInt): VoteEntity {
 
     vote.voteNum = voteNum
     vote.executed = false
-    vote.casts = []
+    vote.numCasts = ZERO_BI
   }
 
   return vote!
 }
 
-function _getCastEntityId(vote: VoteEntity, numCast: number): string {
+function _getCastEntityId(vote: VoteEntity, numCast: BigInt): string {
   return vote.id + '-castNum:' + numCast.toString()
 }
 

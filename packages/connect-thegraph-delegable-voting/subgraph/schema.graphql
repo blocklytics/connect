@@ -14,6 +14,7 @@ type Vote @entity {
   votingPower: BigInt!
   script: Bytes!
   voteNum: BigInt!
+  numCasts: BigInt!
   casts: [Cast!]! @derivedFrom(field: "vote")
 }
 
@@ -37,7 +38,7 @@ type Token @entity {
   decimals: BigInt!
   symbol: String!
   totalSupply: BigInt!
-  department: Department @derivedFrom(field: "token")
+  department: Department!
 }
 
 type Department @entity {

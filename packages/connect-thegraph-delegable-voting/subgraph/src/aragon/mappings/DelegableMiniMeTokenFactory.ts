@@ -2,5 +2,5 @@ import { NewFactoryCloneToken as NewFactoryCloneTokenEvent } from '../../../gene
 import * as aragon from '../aragon'
 
 export function handleClaimedTokens(event: NewFactoryCloneTokenEvent): void {
-  aragon.processToken(event.params.token)
+  // aragon.processToken(event.params.token)
 }

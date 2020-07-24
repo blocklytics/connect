@@ -1,8 +1,6 @@
-import { Address, DataSourceTemplate } from '@graphprotocol/graph-ts'
+import { Address, DataSourceTemplate, log } from '@graphprotocol/graph-ts'
 import { AragonInfo as AragonInfoEntity } from '../../generated/schema'
 import { Kernel as KernelTemplate } from '../../generated/templates'
-// import { MiniMeToken as MiniMeTokenTemplate } from '../../generated/templates'
-import { DelegableMiniMeToken as DelegableMiniMeTokenTemplate } from '../../generated/templates'
 import * as hooks from '../aragon-hooks'
 
 export function processOrg(orgAddress: Address): void {
@@ -28,9 +26,6 @@ export function processApp(appAddress: Address, appId: string): void {
 
 export function processToken(tokenAddress: Address): void {
   if (!_isRegistered(tokenAddress, 'token')) {
-    DelegableMiniMeTokenTemplate.create(tokenAddress)
-    hooks.onTokenTemplateCreated(tokenAddress)
-
     _registerEntity(tokenAddress, 'token')
   }
 }
