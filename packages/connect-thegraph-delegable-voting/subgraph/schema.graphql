@@ -48,6 +48,7 @@ type Department @entity {
   token: Token!
   supportRequiredPct: BigInt!
   minAcceptQuorum: BigInt!
+  voteDuration: BigInt!
   votes: [Vote]! @derivedFrom(field: "department")
   members: [DepartmentMember]! @derivedFrom(field: "department")
 }

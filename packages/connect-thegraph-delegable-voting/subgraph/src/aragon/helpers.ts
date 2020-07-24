@@ -1,4 +1,4 @@
-import { log, BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
+import { log, BigInt, BigDecimal, Address, Bytes } from '@graphprotocol/graph-ts'
 import { LiquidDemocracy, User, DepartmentMember, Department, Token } from '../../generated/schema'
 import { DelegableMiniMeToken } from '../../generated/liquid-democracy-template.open.aragonpm.eth@17.0.0/DelegableMiniMeToken'
 import { DelegableVoting } from '../../generated/liquid-democracy-template.open.aragonpm.eth@17.0.0/DelegableVoting'
@@ -52,7 +52,6 @@ export function equalToZero(value: BigDecimal): boolean {
 }
 
 export function fetchTokenSymbol(tokenAddress: Address): string {
-  // bind to the exchange address
   const contract = DelegableMiniMeToken.bind(tokenAddress)
 
   let symbolValue = 'unknown'
@@ -64,7 +63,6 @@ export function fetchTokenSymbol(tokenAddress: Address): string {
 }
 
 export function fetchTokenName(tokenAddress: Address): string {
-  // bind to the exchange address
   const contract = DelegableMiniMeToken.bind(tokenAddress)
 
   let nameValue = 'unknown'
@@ -96,13 +94,29 @@ export function createLiquidDemocracy(orgAddress: Address): LiquidDemocracy {
   return ld as LiquidDemocracy
 }
 
-export function createDepartment(appAddress: Address): Department {
+export function createDepartment(appAddress: Address, appId: string): Department {
   let department = Department.load(appAddress.toHexString())
   if (department === null) {
     department = new Department(appAddress.toHexString())
     const deptContract = DelegableVoting.bind(appAddress)
     const deptTokenAddress = deptContract.token()
-    const token = Token.load(deptTokenAddress.toHex())
+    department.token = deptTokenAddress.toHex()
+    let token = Token.load(deptTokenAddress.toHex())
+    const tokenName = fetchTokenName(deptTokenAddress)
+    if (token === null) {
+      token = new Token(deptTokenAddress.toHex())
+      token.name = tokenName
+      token.symbol = fetchTokenSymbol(deptTokenAddress)
+      token.decimals = fetchTokenDecimals(deptTokenAddress)
+      token.totalSupply = ZERO_BI
+      token.save()
+    }
+    department.org = deptContract.kernel().toHex()
+    department.name = tokenName.replace(/ token|token| coin|coin/ig, "")
+    department.appId = Bytes.fromHexString(appId)
+    department.supportRequiredPct = deptContract.supportRequiredPct()
+    department.minAcceptQuorum = deptContract.minAcceptQuorumPct()
+    department.voteDuration = deptContract.voteTime()
     department.save()
   }
   if (department == null) log.error("Department is null", [appAddress.toHexString()])
