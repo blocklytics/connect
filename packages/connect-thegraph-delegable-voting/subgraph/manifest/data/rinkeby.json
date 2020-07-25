@@ -6,19 +6,19 @@
       {
         "name": "DAOFactory@0.8.1",
         "address": "0x89d87269527495ac29648376d4154ba55c4872fc",
-        "startBlock": 5922866
+        "startBlock": 6901191
       },
       {
         "name": "DAOFactory@0.8",
         "address": "0xad4d106b43b480faa3ef7f98464ffc27fc1faa96",
-        "startBlock": 5026118
+        "startBlock": 6901191
       }
     ],
     "OrganizationTemplates": [
       {
-        "name": "delegable-voting.open.aragonpm.eth@1.0.0",
-        "address": "0x9B166bBf989887375EE5b201415Ae58ff4B99E6f",
-        "startBlock": 6819075
+        "name": "liquid-democracy-template.open.aragonpm.eth@18.0.0",
+        "address": "0x0bfb64ed9eb81d164b53b29162d7fa4020141c57",
+        "startBlock": 6901191
       }
     ],
     "LegacyOrganizationTemplates": [
@@ -48,7 +48,11 @@
         "startBlock": 4221706
       }
     ],
-    "TokenFactories": [],
+    "TokenFactories": [{
+        "name": "DelegableMiniMeTokenFactory@0.0.1",
+        "address": "0xCcB7b330E433d843Ce6d1B8f561FFBE9AF6827B7",
+        "startBlock": 6883020 
+    }],
     "Tokens": []
   }
 }

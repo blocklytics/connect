@@ -1,11 +1,20 @@
-# DAOTemplate
+# DelegableVoting
 - kind: ethereum/contract
+  {{#name}}
   name: {{name}}
+  {{/name}}
+  {{^name}}
+  name: DelegableVoting
+  {{/name}}
   network: {{network}}
   source:
-    abi: DAOTemplate
+    abi: DelegableVoting
+    {{#address}}
     address: '{{address}}'
+    {{/address}}
+    {{#startBlock}}
     startBlock: {{startBlock}}
+    {{/startBlock}}
   mapping:
     kind: ethereum/events
     apiVersion: 0.0.1
@@ -32,14 +41,11 @@
       - name: DelegableMiniMeTokenFactory
         file: ./abis/DelegableMiniMeTokenFactory.json
     eventHandlers:
-      - event: DeployDao(address)
-        handler: handleDeployDao
-      - event: SetupDao(address)
-        handler: handleSetupDao
-      - event: DeployToken(address)
-        handler: handleDeployToken
-      - event: InstalledApp(address,bytes32)
-        handler: handleInstalledApp
-      - event: DepartmentCreated(address,address,address,address,bool)
-        handler: handleDepartmentCreated
-    file: ./src/aragon/mappings/DAOTemplate.ts
+      - event: StartVote(indexed uint256,indexed address,string)
+        handler: handleStartVote
+      - event: CastVote(indexed uint256,indexed address,bool,uint256)
+        handler: handleCastVote
+      - event: ExecuteVote(indexed uint256)
+        handler: handleExecuteVote
+    file: ./src/DelegableVoting.ts
+

@@ -1,113 +1,256 @@
 [
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_appId",
-        "type": "bytes32"
-      },
-      {
-        "name": "_roles",
-        "type": "bytes32[]"
-      },
-      {
-        "name": "_authorizedAddress",
-        "type": "address"
-      },
-      {
-        "name": "_initializeCallData",
-        "type": "bytes"
-      }
-    ],
-    "name": "newInstance",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "newInstance",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "name": "_daoFactory",
-        "type": "address"
-      },
-      {
-        "name": "_ens",
-        "type": "address"
-      },
-      {
-        "name": "_miniMeFactory",
-        "type": "address"
-      },
-      {
-        "name": "_aragonID",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "dao",
-        "type": "address"
-      }
-    ],
-    "name": "DeployDao",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "dao",
-        "type": "address"
-      }
-    ],
-    "name": "SetupDao",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "token",
-        "type": "address"
-      }
-    ],
-    "name": "DeployToken",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "appProxy",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "name": "appId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "InstalledApp",
-    "type": "event"
-  }
-]
+    {
+      "inputs": [
+        {
+          "name": "_daoFactory",
+          "type": "address"
+        },
+        {
+          "name": "_ens",
+          "type": "address"
+        },
+        {
+          "name": "_miniMeFactory",
+          "type": "address"
+        },
+        {
+          "name": "_aragonID",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "org",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "department",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "tokenManager",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "isMgmt",
+          "type": "bool"
+        }
+      ],
+      "name": "DepartmentCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "dao",
+          "type": "address"
+        }
+      ],
+      "name": "DeployDao",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "dao",
+          "type": "address"
+        }
+      ],
+      "name": "SetupDao",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "DeployToken",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "appProxy",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "appId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "InstalledApp",
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_managementTokenName",
+          "type": "string"
+        },
+        {
+          "name": "_managementTokenSymbol",
+          "type": "string"
+        },
+        {
+          "name": "_managementTokenDecimals",
+          "type": "uint8"
+        },
+        {
+          "name": "_managementTokensTransferable",
+          "type": "bool"
+        },
+        {
+          "name": "_managementTokensDelegable",
+          "type": "bool"
+        },
+        {
+          "name": "_managementVotingSettings",
+          "type": "uint64[3]"
+        },
+        {
+          "name": "_managementMaxTokens",
+          "type": "uint256"
+        }
+      ],
+      "name": "prepareInstance",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_tokenName",
+          "type": "string"
+        },
+        {
+          "name": "_tokenSymbol",
+          "type": "string"
+        },
+        {
+          "name": "_tokenDecimals",
+          "type": "uint8"
+        },
+        {
+          "name": "_tokenTransferable",
+          "type": "bool"
+        },
+        {
+          "name": "_tokenDelegable",
+          "type": "bool"
+        },
+        {
+          "name": "_votingSettings",
+          "type": "uint64[3]"
+        },
+        {
+          "name": "_maxTokens",
+          "type": "uint256"
+        }
+      ],
+      "name": "installDepartment",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_deptTokenHolders",
+          "type": "address[]"
+        },
+        {
+          "name": "_deptStakes",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "distributeDepartmentTokens",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_id",
+          "type": "string"
+        },
+        {
+          "name": "_managementTokenHolders",
+          "type": "address[]"
+        },
+        {
+          "name": "_managementStakes",
+          "type": "uint256[]"
+        },
+        {
+          "name": "_financePeriod",
+          "type": "uint64"
+        },
+        {
+          "name": "_useAgentAsVault",
+          "type": "bool"
+        }
+      ],
+      "name": "finalizeInstance",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_acl",
+          "type": "address"
+        },
+        {
+          "name": "_mgmtTokenManager",
+          "type": "address"
+        },
+        {
+          "name": "_mgmtVotingApp",
+          "type": "address"
+        }
+      ],
+      "name": "_grantManagementPrivileges",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]

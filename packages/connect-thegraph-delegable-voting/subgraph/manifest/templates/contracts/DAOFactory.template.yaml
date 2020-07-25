@@ -11,12 +11,18 @@
     apiVersion: 0.0.1
     language: wasm/assemblyscript
     entities:
-      - NoEnt
+      - DepartmentMember
+      - Department
+      - Vote
+      - Cast
+      - Token
+      - LiquidDemocracy
+      - User
+      - DelegationBalance
+      - DelegationHistory
     abis:
       - name: DAOFactory
         file: ./abis/DAOFactory.json
-      - name: DAOKit
-        file: ./abis/DAOKit.json
       - name: DAOTemplate
         file: ./abis/DAOTemplate.json
       - name: Kernel
@@ -25,6 +31,12 @@
         file: ./abis/MiniMeToken.json
       - name: MiniMeTokenFactory
         file: ./abis/MiniMeTokenFactory.json
+      - name: DelegableVoting
+        file: ./abis/DelegableVoting.json
+      - name: DelegableMiniMeToken
+        file: ./abis/DelegableMiniMeToken.json
+      - name: DelegableMiniMeTokenFactory
+        file: ./abis/DelegableMiniMeTokenFactory.json
     eventHandlers:
       - event: DeployDAO(address)
         handler: handleDeployDAO

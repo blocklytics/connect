@@ -1,41 +1,19 @@
 # Do not edit subgraph.yaml, this is a generated file.
 # Instead, edit subgraph.template.yaml and run `yarn manifest-<network>-[staging]`
 specVersion: 0.0.2
-description: A template for Aragon subgraphs
-repository: https://github.com/aragon/connect
+description: Aragon Delegable Voting Subgraph
+repository: https://github.com/blocklytics/connect/tree/master/packages/connect-thegraph-delegable-voting
 schema:
   file: ./schema.graphql
 dataSources:
-{{> Organizations.yaml}}
-{{> OrganizationFactories.yaml}}
-{{!> OrganizationTemplates.yaml}}
+{{!> Organizations.yaml}}
+{{!> OrganizationFactories.yaml}}
+{{> OrganizationTemplates.yaml}}
 {{!> LegacyOrganizationTemplates.yaml}}
 {{!> TokenFactories.yaml}}
 {{!> Tokens.yaml}}
 templates:
   {{> Kernel.template.yaml}}
   {{!> MiniMeToken.template.yaml}}
+  {{> DelegableVoting.template.yaml}}
   {{> DelegableMiniMeToken.template.yaml}}
-  - kind: ethereum/contract
-    name: DelegableVoting
-    network: {{network}}
-    source:
-      abi: DelegableVoting
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.1
-      language: wasm/assemblyscript
-      entities:
-        - Vote
-        - Cast
-      abis:
-        - name: DelegableVoting
-          file: ./abis/DelegableVoting.json
-      eventHandlers:
-        - event: StartVote(indexed uint256,indexed address,string)
-          handler: handleStartVote
-        - event: CastVote(indexed uint256,indexed address,bool,uint256)
-          handler: handleCastVote
-        - event: ExecuteVote(indexed uint256)
-          handler: handleExecuteVote
-      file: ./src/DelegableVoting.ts

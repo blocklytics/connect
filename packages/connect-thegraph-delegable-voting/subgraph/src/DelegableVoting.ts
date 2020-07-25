@@ -14,6 +14,8 @@ import {
   Cast as CastEntity
 } from '../generated/schema'
 
+import { ONE_BI, ZERO_BI } from './aragon/helpers'
+
 export function handleStartVote(event: StartVoteEvent): void {
   let vote = _getVoteEntity(event.address, event.params.voteId)
 
@@ -26,24 +28,22 @@ export function handleStartVote(event: StartVoteEvent): void {
 export function handleCastVote(event: CastVoteEvent): void {
   let vote = _getVoteEntity(event.address, event.params.voteId)
 
-  let numCasts = vote.casts.length
+  let numCasts = vote.numCasts
 
   let castId = _getCastEntityId(vote, numCasts)
   let cast = new CastEntity(castId)
 
   _populateCastDataFromEvent(cast, event)
   cast.voteNum = vote.voteNum
-  cast.voteId = vote.id
-
-  let casts = vote.casts
-  casts.push(castId)
-  vote.casts = casts
+  cast.vote = vote.id
 
   if (event.params.supports == true) {
     vote.yea = vote.yea.plus(event.params.stake)
   } else {
     vote.nay = vote.nay.plus(event.params.stake)
   }
+
+  vote.numCasts = numCasts.plus(ONE_BI)
 
   vote.save()
   cast.save()
@@ -66,13 +66,13 @@ function _getVoteEntity(appAddress: Address, voteNum: BigInt): VoteEntity {
 
     vote.voteNum = voteNum
     vote.executed = false
-    vote.casts = []
+    vote.numCasts = ZERO_BI
   }
 
   return vote!
 }
 
-function _getCastEntityId(vote: VoteEntity, numCast: number): string {
+function _getCastEntityId(vote: VoteEntity, numCast: BigInt): string {
   return vote.id + '-castNum:' + numCast.toString()
 }
 
@@ -94,17 +94,17 @@ function _populateVoteDataFromContract(vote: VoteEntity, appAddress: Address, vo
   vote.nay = voteData.value7
   vote.votingPower = voteData.value8
   vote.script = voteData.value9
-  vote.orgAddress = voting.kernel()
-  vote.appAddress = appAddress
+  vote.org = voting.kernel().toHex()
+  vote.department = appAddress.toHex()
 }
 
 function _populateVoteDataFromEvent(vote: VoteEntity, event: StartVoteEvent): void {
-  vote.creator = event.params.creator
+  vote.creator = event.address.toHexString() + "-" + event.params.creator.toHex()
   vote.metadata = event.params.metadata
 }
 
 function _populateCastDataFromEvent(cast: CastEntity, event: CastVoteEvent): void {
-  cast.voter = event.params.voter
+  cast.voter = event.params.voter.toHex()
   cast.supports = event.params.supports
   cast.voterStake = event.params.stake
 }

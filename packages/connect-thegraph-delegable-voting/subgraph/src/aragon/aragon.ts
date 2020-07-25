@@ -1,8 +1,6 @@
-import { Address, DataSourceTemplate } from '@graphprotocol/graph-ts'
+import { Address, DataSourceTemplate, log } from '@graphprotocol/graph-ts'
 import { AragonInfo as AragonInfoEntity } from '../../generated/schema'
 import { Kernel as KernelTemplate } from '../../generated/templates'
-// import { MiniMeToken as MiniMeTokenTemplate } from '../../generated/templates'
-import { DelegableMiniMeToken as DelegableMiniMeTokenTemplate } from '../../generated/templates'
 import * as hooks from '../aragon-hooks'
 
 export function processOrg(orgAddress: Address): void {
@@ -12,6 +10,29 @@ export function processOrg(orgAddress: Address): void {
 
     _registerEntity(orgAddress, 'org')
   }
+}
+
+export function processDepartment(
+  orgAddress: Address,
+  deptAddress: Address,
+  tokenManagerAddress: Address,
+  tokenAddress: Address,
+  isMgmt: boolean
+): void {
+  if (!_isRegistered(orgAddress, 'org')) {
+    KernelTemplate.create(orgAddress)
+    hooks.onOrgTemplateCreated(orgAddress)
+    _registerEntity(orgAddress, 'org')
+  }
+
+  if (!_isRegistered(deptAddress, 'app')) {
+      DataSourceTemplate.create('DelegableVoting', [deptAddress.toHexString()])
+      hooks.onDeptTemplateCreated(orgAddress, deptAddress, tokenManagerAddress, tokenAddress, isMgmt)
+
+    _registerEntity(deptAddress, 'app')
+  }
+  processApp(tokenManagerAddress, '0x612a0e063dccdc5e9b8980e4f084f2831ce5ccd6f9aaf90da5811a18da11f0c2')
+  processToken(tokenAddress)
 }
 
 export function processApp(appAddress: Address, appId: string): void {
@@ -28,10 +49,6 @@ export function processApp(appAddress: Address, appId: string): void {
 
 export function processToken(tokenAddress: Address): void {
   if (!_isRegistered(tokenAddress, 'token')) {
-    // MiniMeTokenTemplate.create(tokenAddress)
-    DelegableMiniMeTokenTemplate.create(tokenAddress)
-    hooks.onTokenTemplateCreated(tokenAddress)
-
     _registerEntity(tokenAddress, 'token')
   }
 }
