@@ -40,4 +40,6 @@
         handler: handleDeployToken
       - event: InstalledApp(address,bytes32)
         handler: handleInstalledApp
+      - event: DepartmentCreated(address,address,address,address,bool)
+        handler: handleDepartmentCreated
     file: ./src/aragon/mappings/DAOTemplate.ts

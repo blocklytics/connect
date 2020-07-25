@@ -12,6 +12,29 @@ export function processOrg(orgAddress: Address): void {
   }
 }
 
+export function processDepartment(
+  orgAddress: Address,
+  deptAddress: Address,
+  tokenManagerAddress: Address,
+  tokenAddress: Address,
+  isMgmt: boolean
+): void {
+  if (!_isRegistered(orgAddress, 'org')) {
+    KernelTemplate.create(orgAddress)
+    hooks.onOrgTemplateCreated(orgAddress)
+    _registerEntity(orgAddress, 'org')
+  }
+
+  if (!_isRegistered(deptAddress, 'app')) {
+      DataSourceTemplate.create('DelegableVoting', [deptAddress.toHexString()])
+      hooks.onDeptTemplateCreated(orgAddress, deptAddress, tokenManagerAddress, tokenAddress, isMgmt)
+
+    _registerEntity(deptAddress, 'app')
+  }
+  processApp(tokenManagerAddress, '0x612a0e063dccdc5e9b8980e4f084f2831ce5ccd6f9aaf90da5811a18da11f0c2')
+  processToken(tokenAddress)
+}
+
 export function processApp(appAddress: Address, appId: string): void {
   if (!_isRegistered(appAddress, 'app')) {
     let templateType = hooks.getTemplateForApp(appId)

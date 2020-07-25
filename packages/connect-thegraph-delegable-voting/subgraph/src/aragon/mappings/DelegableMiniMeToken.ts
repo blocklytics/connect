@@ -4,7 +4,7 @@ import { NewCloneToken as NewCloneTokenEvent } from '../../../generated/template
 import { Approval as ApprovalEvent } from '../../../generated/templates/DelegableMiniMeToken/DelegableMiniMeToken'
 import { Delegate as DelegateEvent } from '../../../generated/templates/DelegableMiniMeToken/DelegableMiniMeToken'
 import { UnDelegate as UnDelegateEvent } from '../../../generated/templates/DelegableMiniMeToken/DelegableMiniMeToken'
-import { createUser, createDepartmentMember, createDelegationBalance, isZeroAddress, toAddress, votingPowerPercent, ZERO_BI} from '../helpers'
+import { createUser, createDepartmentMember, createDelegationBalance, isZeroAddress, toAddress, votingPowerPercent, ZERO_BI, updateAllVotingPowerPercent} from '../helpers'
 import { Token, DelegationHistory } from '../../../generated/schema'
 
 export function handleClaimedTokens(event: ClaimedTokensEvent): void {}
@@ -50,7 +50,8 @@ export function handleTransfer(event: TransferEvent): void {
         let newTokenBalance = toDepartmentMember.currentTokenBalance.plus(amount)
         toDepartmentMember.currentTokenBalance = newTokenBalance
         toDepartmentMember.save()
-    } 
+    }
+    updateAllVotingPowerPercent(departmentAddress)
 }
 export function handleNewCloneToken(event: NewCloneTokenEvent): void {}
 export function handleApproval(event: ApprovalEvent): void {}
@@ -61,7 +62,6 @@ export function handleDelegate(event: DelegateEvent): void {
     const departmentAddress = toAddress(token.department)
     const from = event.params._owner
     const to = event.params._delegate
-    const delegationBalance = createDelegationBalance(from, to)
     const amount = event.params._amount
     const blockNumber = event.block.number
     const logIndex = event.transactionLogIndex
@@ -87,6 +87,7 @@ export function handleDelegate(event: DelegateEvent): void {
     toDepartmentMember.currentAmountDelegatedTo = newAmountDelegatedTo
     toDepartmentMember.save()
 
+    const delegationBalance = createDelegationBalance(from, to)
     const newDelegationBalance = delegationBalance.currentBalance.plus(amount)
     delegationBalance.currentBalance = newDelegationBalance
     delegationBalance.save()
@@ -101,6 +102,8 @@ export function handleDelegate(event: DelegateEvent): void {
     history.timestamp = event.block.timestamp
     history.transaction = event.transaction.hash
     history.save()
+
+    updateAllVotingPowerPercent(departmentAddress)
 }
 export function handleUnDelegate(event: UnDelegateEvent): void {
     const tokenAddress = event.address.toHex()
@@ -149,4 +152,6 @@ export function handleUnDelegate(event: UnDelegateEvent): void {
     history.timestamp = event.block.timestamp
     history.transaction = event.transaction.hash
     history.save()
+
+    updateAllVotingPowerPercent(departmentAddress)
 }

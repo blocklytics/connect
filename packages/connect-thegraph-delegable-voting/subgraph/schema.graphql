@@ -30,6 +30,8 @@ type Cast @entity {
 type LiquidDemocracy @entity {
   id: ID!                              # orgAddress
   departments: [Department]! @derivedFrom(field: "org")
+  tokens: [Token]! @derivedFrom(field: "org")
+  tokenManagers: [TokenManager]! @derivedFrom(field: "org")
 }
 
 type Token @entity {
@@ -39,6 +41,8 @@ type Token @entity {
   symbol: String!
   totalSupply: BigInt!
   department: Department!
+  org: LiquidDemocracy!
+  tokenManager: TokenManager! @derivedFrom(field: "token")
 }
 
 type Department @entity {
@@ -51,11 +55,21 @@ type Department @entity {
   minAcceptQuorum: BigInt!
   voteDuration: BigInt!
   votes: [Vote]! @derivedFrom(field: "department")
-  members: [DepartmentMember]! @derivedFrom(field: "department")
+  members: [DepartmentMember]!
+  isManagement: Boolean!
+  tokenManager: TokenManager! @derivedFrom(field: "department")
+}
+
+type TokenManager @entity {
+  id: ID!
+  department: Department!
+  org: LiquidDemocracy!
+  token: Token!
 }
 
 type User @entity {
   id: ID! # Ethereum address
+  orgs: [LiquidDemocracy]!
   departments: [DepartmentMember]! @derivedFrom(field: "user")
 }
 
