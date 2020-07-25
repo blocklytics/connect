@@ -71,6 +71,10 @@ type User @entity {
   id: ID! # Ethereum address
   orgs: [LiquidDemocracy]!
   departments: [DepartmentMember]! @derivedFrom(field: "user")
+  currentDelegatedFrom: [DelegationBalance]! @derivedFrom(field: "fromUser")
+  currentDelegatedTo: [DelegationBalance]! @derivedFrom(field: "toUser")
+  delegatedFromHistory: [DelegationHistory]! @derivedFrom(field: "fromUser")
+  delegatedToHistory: [DelegationHistory]! @derivedFrom(field: "toUser")
 }
 
 type DepartmentMember @entity {
@@ -83,23 +87,29 @@ type DepartmentMember @entity {
   currentAmountDelegatedFrom: BigInt!
   currentAmountDelegatedTo: BigInt!
   votesCast: [Cast]! @derivedFrom(field: "voter")
-  currentDelegatedFrom: [DelegationBalance]! @derivedFrom(field: "from")
-  currentDelegatedTo: [DelegationBalance]! @derivedFrom(field: "to")
-  delegatedFromHistory: [DelegationHistory]! @derivedFrom(field: "from")
-  delegatedToHistory: [DelegationHistory]! @derivedFrom(field: "to")
+  currentDelegatedFrom: [DelegationBalance]! @derivedFrom(field: "fromMember")
+  currentDelegatedTo: [DelegationBalance]! @derivedFrom(field: "toMember")
+  delegatedFromHistory: [DelegationHistory]! @derivedFrom(field: "fromMember")
+  delegatedToHistory: [DelegationHistory]! @derivedFrom(field: "toMember")
 }
 
 type DelegationBalance @entity {
-  id: ID!                                 # from-to
-  from: DepartmentMember!
-  to: DepartmentMember!
+  id: ID!                                 # department-from-to
+  department: Department!
+  fromUser: User!
+  toUser: User!
+  fromMember: DepartmentMember!
+  toMember: DepartmentMember!
   currentBalance: BigInt!
 }
 
 type DelegationHistory @entity {
-  id: ID!                                 # from-to:block+logIndex
-  from: DepartmentMember!
-  to: DepartmentMember!
+  id: ID!                                 # department-from-to-block-logIndex
+  department: Department!
+  fromUser: User!
+  toUser: User!
+  fromMember: DepartmentMember!
+  toMember: DepartmentMember!
   amount: BigInt!                         # Negative values = UnDelegation
   newBalance: BigInt!
   blockNumber: BigInt!

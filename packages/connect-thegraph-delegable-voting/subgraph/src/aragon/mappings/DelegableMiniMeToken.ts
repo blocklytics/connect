@@ -65,7 +65,7 @@ export function handleDelegate(event: DelegateEvent): void {
     const amount = event.params._amount
     const blockNumber = event.block.number
     const logIndex = event.transactionLogIndex
-    const balanceHistoryId = from.toHexString() + "-" + to.toHexString() + ":" + blockNumber.toString() + "+" + logIndex.toString()
+    const balanceHistoryId = token.department + "-" + from.toHexString() + "-" + to.toHexString() + "-" + blockNumber.toString() + "-" + logIndex.toString()
 
     createUser(from)
     let fromDepartmentMember = createDepartmentMember(departmentAddress, from)
@@ -87,14 +87,17 @@ export function handleDelegate(event: DelegateEvent): void {
     toDepartmentMember.currentAmountDelegatedTo = newAmountDelegatedTo
     toDepartmentMember.save()
 
-    const delegationBalance = createDelegationBalance(from, to)
+    const delegationBalance = createDelegationBalance(departmentAddress, from, to)
     const newDelegationBalance = delegationBalance.currentBalance.plus(amount)
     delegationBalance.currentBalance = newDelegationBalance
     delegationBalance.save()
 
     const history = new DelegationHistory(balanceHistoryId)
-    history.from = from.toHex()
-    history.to = to.toHex()
+    history.department = token.department
+    history.fromUser = from.toHex()
+    history.toUser = to.toHex()
+    history.fromMember = fromDepartmentMember.id
+    history.toMember = toDepartmentMember.id
     history.amount = amount
     history.newBalance = newDelegationBalance
     history.blockNumber = blockNumber
@@ -112,7 +115,7 @@ export function handleUnDelegate(event: UnDelegateEvent): void {
     const departmentAddress = toAddress(token.department)
     const from = event.params._owner
     const to = event.params._delegate
-    const delegationBalance = createDelegationBalance(from, to)
+    const delegationBalance = createDelegationBalance(departmentAddress, from, to)
     const amount = event.params._amount
     const blockNumber = event.block.number
     const logIndex = event.transactionLogIndex
@@ -143,8 +146,11 @@ export function handleUnDelegate(event: UnDelegateEvent): void {
     delegationBalance.save()
 
     const history = new DelegationHistory(balanceHistoryId)
-    history.from = from.toHex()
-    history.to = to.toHex()
+    history.department = token.department
+    history.fromUser = from.toHex()
+    history.toUser = to.toHex()
+    history.fromMember = fromDepartmentMember.id
+    history.toMember = toDepartmentMember.id
     history.amount = ZERO_BI.minus(amount)
     history.newBalance = newDelegationBalance
     history.blockNumber = blockNumber

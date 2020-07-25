@@ -191,8 +191,6 @@ export function createDepartmentMember(departmentAddress: Address, userAddress: 
       user.save()
     }
     department.save()
-
-
   }
   if (departmentMember == null) {
     log.error("DepartmentMember is null: {}", [id])
@@ -217,13 +215,16 @@ export function createUser(address: Address): User {
   return user as User
 }
 
-export function createDelegationBalance(from: Address, to: Address): DelegationBalance {
-  const id = from.toHexString() + "-" + to.toHexString()
+export function createDelegationBalance(department: Address, from: Address, to: Address): DelegationBalance {
+  const id = department.toHexString() + "-" + from.toHexString() + "-" + to.toHexString()
   let balance = DelegationBalance.load(id)
   if (balance === null) {
     balance = new DelegationBalance(id)
-    balance.from = from.toHexString()
-    balance.to = to.toHexString()
+    balance.department = department.toHex()
+    balance.fromUser = from.toHexString()
+    balance.toUser = to.toHexString()
+    balance.fromMember = createDepartmentMember(department, from).id
+    balance.toMember = createDepartmentMember(department, to).id
     balance.currentBalance = ZERO_BI
     balance.save()
   }
