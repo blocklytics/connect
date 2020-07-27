@@ -39,8 +39,8 @@ export const KNOWN_ORGS: Array<KnownOrg> = [
     name: "Liquid America"
   },
   {
-    address: "0xC6DAEe7D40B5B63eF85B1dEb1149585e03E138F2",
-    name: "Compound"
+    address: "0xc6daee7d40b5b63ef85b1deb1149585e03e138f2",
+    name: "Liquid Compound"
   }
 ]
 
@@ -112,7 +112,7 @@ export function createLiquidDemocracy(
     ld = new LiquidDemocracy(orgAddress.toHexString())
     let orgName = orgAddress.toHexString()
     for (let i = 0; i < KNOWN_ORGS.length; i++) {
-      if (KNOWN_ORGS[i].name == orgName) {
+      if (KNOWN_ORGS[i].address == orgName) {
         orgName = KNOWN_ORGS[i].name
         break
       }
