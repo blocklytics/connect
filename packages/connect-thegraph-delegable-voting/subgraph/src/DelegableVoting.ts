@@ -54,8 +54,7 @@ export function handleStartVote(event: StartVoteEvent): void {
   for (let i = 0; i < potentialVoters.length; i++) {
     let user = User.load(potentialVoters[i])
     let numVotes = user.numPotentialVotes
-    numVotes.plus(ONE_BI)
-    user.numPotentialVotes = numVotes
+    user.numPotentialVotes = numVotes.plus(ONE_BI)
     user.save()
   }
   vote.numPotentialVoters = BigInt.fromI32(potentialVoters.length)
@@ -63,8 +62,7 @@ export function handleStartVote(event: StartVoteEvent): void {
   for (let i = 0; i < potentialVotingMembers.length; i++) {
     let member = DepartmentMember.load(potentialVotingMembers[i])
     let numVotes = member.numPotentialVotes
-    numVotes.plus(ONE_BI)
-    member.numPotentialVotes = numVotes
+    member.numPotentialVotes = numVotes.plus(ONE_BI)
     member.save()
   }
   vote.createdAtBlockNumber = event.block.number
@@ -158,8 +156,7 @@ export function handleExecuteVote(event: ExecuteVoteEvent): void {
   for (let i = 0; i < participatingVoters.length; i++) {
     let user = User.load(participatingVoters[i])
     let numVotes = user.numVotesParticipated
-    numVotes.plus(ONE_BI)
-    user.numVotesParticipated = numVotes
+    user.numVotesParticipated = numVotes.plus(ONE_BI)
     if (user.numPotentialVotes != ZERO_BI) {
       user.voteParticipationPct = numVotes.toBigDecimal().div(user.numPotentialVotes.toBigDecimal())
     } else {
@@ -172,8 +169,7 @@ export function handleExecuteVote(event: ExecuteVoteEvent): void {
   for (let i = 0; i < participatingMembers.length; i++) {
     let member = DepartmentMember.load(participatingMembers[i])
     let numVotes = member.numVotesParticipated
-    numVotes.plus(ONE_BI)
-    member.numVotesParticipated = numVotes
+    member.numVotesParticipated = numVotes.plus(ONE_BI)
     if (member.numPotentialVotes != ZERO_BI) {
       member.voteParticipationPct = numVotes.toBigDecimal().div(member.numPotentialVotes.toBigDecimal())
     } else {

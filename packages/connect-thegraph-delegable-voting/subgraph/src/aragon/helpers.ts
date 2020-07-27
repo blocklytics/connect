@@ -37,6 +37,10 @@ export const KNOWN_ORGS: Array<KnownOrg> = [
   {
     address: "0x6440fcb29dc25b184420001bfd64fdb0ce4f73b0", 
     name: "Liquid America"
+  },
+  {
+    address: "0xC6DAEe7D40B5B63eF85B1dEb1149585e03E138F2",
+    name: "Compound"
   }
 ]
 
