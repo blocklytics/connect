@@ -32,6 +32,8 @@ export function handleTransfer(event: TransferEvent): void {
         createUser(from)
         let fromDepartmentMember = createDepartmentMember(departmentAddress, from)
         fromDepartmentMember.user = from.toHex()
+        let newDelegableBalance = fromDepartmentMember.delegableBalance.minus(amount)
+        fromDepartmentMember.delegableBalance = newDelegableBalance
         let newPower = fromDepartmentMember.votingPower.minus(amount)
         fromDepartmentMember.votingPower = newPower
         fromDepartmentMember.votingPowerPercent = votingPowerPercent(newPower, totalSupply)
@@ -44,6 +46,8 @@ export function handleTransfer(event: TransferEvent): void {
         createUser(to)
         let toDepartmentMember = createDepartmentMember(departmentAddress, to)
         toDepartmentMember.user = to.toHex()
+        let newDelegableBalance = toDepartmentMember.delegableBalance.plus(amount)
+        toDepartmentMember.delegableBalance = newDelegableBalance
         let newPower = toDepartmentMember.votingPower.plus(amount)
         toDepartmentMember.votingPower = newPower
         toDepartmentMember.votingPowerPercent = votingPowerPercent(newPower, totalSupply)
@@ -70,6 +74,8 @@ export function handleDelegate(event: DelegateEvent): void {
     createUser(from)
     let fromDepartmentMember = createDepartmentMember(departmentAddress, from)
     fromDepartmentMember.user = from.toHex()
+    let newFromDelegableBalance = fromDepartmentMember.delegableBalance.minus(amount)
+    fromDepartmentMember.delegableBalance = newFromDelegableBalance
     let fromNewPower = fromDepartmentMember.votingPower.minus(amount)
     fromDepartmentMember.votingPower = fromNewPower
     fromDepartmentMember.votingPowerPercent = votingPowerPercent(fromNewPower, totalSupply)
@@ -124,6 +130,8 @@ export function handleUnDelegate(event: UnDelegateEvent): void {
     createUser(from)
     let fromDepartmentMember = createDepartmentMember(departmentAddress, from)
     fromDepartmentMember.user = from.toHex()
+    let newDelegableBalance = fromDepartmentMember.delegableBalance.plus(amount)
+    fromDepartmentMember.delegableBalance = newDelegableBalance
     let fromNewPower = fromDepartmentMember.votingPower.plus(amount)
     fromDepartmentMember.votingPower = fromNewPower
     fromDepartmentMember.votingPowerPercent = votingPowerPercent(fromNewPower, totalSupply)

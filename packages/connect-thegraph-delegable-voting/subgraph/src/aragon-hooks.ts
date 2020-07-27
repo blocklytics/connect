@@ -1,4 +1,4 @@
-import { Address } from '@graphprotocol/graph-ts'
+import { Address, BigInt, Bytes } from '@graphprotocol/graph-ts'
 import { createLiquidDemocracy, createDepartment, createToken } from './aragon/helpers'
 
 /*
@@ -18,8 +18,18 @@ export function getTemplateForApp(appId: string): string | null {
   // }
 }
 
-export function onOrgTemplateCreated(orgAddress: Address): void {
-  createLiquidDemocracy(orgAddress)
+export function onOrgTemplateCreated(
+  orgAddress: Address,
+  blockNumber: BigInt, 
+  blockTimestamp: BigInt, 
+  transaction: Bytes
+): void {
+  createLiquidDemocracy(
+    orgAddress,
+    blockNumber, 
+    blockTimestamp, 
+    transaction
+  )
 }
 
 export function onDeptTemplateCreated(
@@ -27,9 +37,21 @@ export function onDeptTemplateCreated(
   appAddress: Address, 
   tokenManagerAddress: Address,
   tokenAddress: Address, 
-  isMgmt: boolean
+  isMgmt: boolean,
+  blockNumber: BigInt, 
+  blockTimestamp: BigInt, 
+  transaction: Bytes
 ): void {
-  createDepartment(orgAddress, appAddress, tokenManagerAddress, tokenAddress, '0x962d75a3fcdae15ddc7ef4fe1d96f9af72169958e9bc683aedfee5f32e7c84a5', isMgmt) 
+  createDepartment(
+    orgAddress, 
+    appAddress, 
+    tokenManagerAddress, 
+    tokenAddress, 
+    isMgmt,
+    blockNumber, 
+    blockTimestamp, 
+    transaction
+  ) 
 }
 
 export function onAppTemplateCreated(appAddress: Address, appId: string): void {

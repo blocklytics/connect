@@ -1,4 +1,4 @@
-import { log, BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
+import { log, BigInt, BigDecimal, Address, Bytes } from '@graphprotocol/graph-ts'
 import { LiquidDemocracy, User, DepartmentMember, Department, TokenManager, Token, DelegationBalance } from '../../generated/schema'
 import { DelegableMiniMeToken } from '../../generated/liquid-democracy-template.open.aragonpm.eth@18.0.0/DelegableMiniMeToken'
 import { DelegableVoting } from '../../generated/liquid-democracy-template.open.aragonpm.eth@18.0.0/DelegableVoting'
@@ -29,12 +29,27 @@ export const ONE_BI = BigInt.fromI32(1)
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
+export class KnownOrg {
+  address: string
+  name: string
+}
+export const KNOWN_ORGS: Array<KnownOrg> = [
+  {
+    address: "0x6440fcb29dc25b184420001bfd64fdb0ce4f73b0", 
+    name: "Liquid America"
+  }
+]
+
 export function toAddress(input: string): Address {
   return Address.fromString(input)
 }
 
 export function isZeroAddress(input: Address): boolean {
   return input == toAddress(ZERO_ADDRESS)
+}
+
+export function convertToPct(number: BigInt): BigDecimal {
+  return number.toBigDecimal().div(bigDecimalExp18())
 }
 
 export function convertTokenToDecimal(tokenAmount: BigInt, tokenDecimals: i32): BigDecimal {
@@ -82,10 +97,26 @@ export function fetchTokenDecimals(tokenAddress: Address): BigInt {
   return BigInt.fromI32(decimalValue)
 }
 
-export function createLiquidDemocracy(orgAddress: Address): void {
+export function createLiquidDemocracy(
+  orgAddress: Address,
+  blockNumber: BigInt, 
+  blockTimestamp: BigInt, 
+  transaction: Bytes
+): void {
   let ld = LiquidDemocracy.load(orgAddress.toHexString())
   if (ld === null) {
     ld = new LiquidDemocracy(orgAddress.toHexString())
+    let orgName = orgAddress.toHexString()
+    for (let i = 0; i < KNOWN_ORGS.length; i++) {
+      if (KNOWN_ORGS[i].name == orgName) {
+        orgName = KNOWN_ORGS[i].name
+        break
+      }
+    }
+    ld.name = orgName
+    ld.createdAtBlockNumber = blockNumber
+    ld.createdAtTimestamp = blockTimestamp
+    ld.createdAtTransaction = transaction
     ld.save()
   }
   if (ld == null) {
@@ -100,8 +131,10 @@ export function createDepartment(
   appAddress: Address,
   tokenManagerAddress: Address,
   deptTokenAddress: Address, 
-  appId: string, 
-  isMgmt: boolean
+  isMgmt: boolean,
+  blockNumber: BigInt, 
+  blockTimestamp: BigInt, 
+  transaction: Bytes
 ): void {
   let token = Token.load(deptTokenAddress.toHex())
   const tokenName = fetchTokenName(deptTokenAddress)
@@ -118,9 +151,13 @@ export function createDepartment(
   }
 
   let tokenManager = new TokenManager(tokenManagerAddress.toHex())
+  tokenManager.appId = "0x612a0e063dccdc5e9b8980e4f084f2831ce5ccd6f9aaf90da5811a18da11f0c2"
   tokenManager.department = appAddress.toHex()
   tokenManager.org = orgAddress.toHex()
   tokenManager.token = deptTokenAddress.toHex()
+  tokenManager.createdAtBlockNumber = blockNumber
+  tokenManager.createdAtTimestamp = blockTimestamp
+  tokenManager.createdAtTransaction = transaction
   tokenManager.save()
 
   let department = Department.load(appAddress.toHex())
@@ -129,12 +166,15 @@ export function createDepartment(
     department.token = deptTokenAddress.toHex()
     department.org = orgAddress.toHex()
     department.name = tokenName
-    department.appId = appId
+    department.appId = "0x962d75a3fcdae15ddc7ef4fe1d96f9af72169958e9bc683aedfee5f32e7c84a5"
     const deptContract = DelegableVoting.bind(appAddress)
-    department.supportRequiredPct = deptContract.supportRequiredPct()
-    department.minAcceptQuorum = deptContract.minAcceptQuorumPct()
+    department.supportRequiredPct = convertToPct(deptContract.supportRequiredPct())
+    department.minAcceptQuorum = convertToPct(deptContract.minAcceptQuorumPct())
     department.voteDuration = deptContract.voteTime()
     department.isManagement = isMgmt
+    department.createdAtBlockNumber = blockNumber
+    department.createdAtTimestamp = blockTimestamp
+    department.createdAtTransaction = transaction
     department.members = []
     department.save()
   }
@@ -172,11 +212,15 @@ export function createDepartmentMember(departmentAddress: Address, userAddress: 
     departmentMember = new DepartmentMember(id)
     departmentMember.user = userAddress.toHexString()
     departmentMember.department = departmentAddress.toHexString()
+    departmentMember.delegableBalance = ZERO_BI
     departmentMember.votingPower = ZERO_BI
     departmentMember.votingPowerPercent = ZERO_BD
     departmentMember.currentTokenBalance = ZERO_BI
     departmentMember.currentAmountDelegatedFrom = ZERO_BI
     departmentMember.currentAmountDelegatedTo = ZERO_BI
+    departmentMember.numVotesParticipated = ZERO_BI
+    departmentMember.numPotentialVotes = ZERO_BI
+    departmentMember.voteParticipationPct = ZERO_BD
     departmentMember.save()
 
     let department = Department.load(departmentAddress.toHex())
@@ -188,8 +232,14 @@ export function createDepartmentMember(departmentAddress: Address, userAddress: 
     if (!userOrgs.includes(userAddress.toHex())) {
       userOrgs.push(department.org)
       user.orgs = userOrgs
-      user.save()
     }
+
+    let userDepartments = user.departments
+    if (!userDepartments.includes(departmentAddress.toHex())) {
+      userDepartments.push(departmentAddress.toHex())
+      user.departments = userDepartments
+    }
+    user.save()
     department.save()
   }
   if (departmentMember == null) {
@@ -205,6 +255,10 @@ export function createUser(address: Address): User {
   if (user === null) {
     user = new User(address.toHexString())
     user.orgs = []
+    user.departments = []
+    user.numVotesParticipated = ZERO_BI
+    user.numPotentialVotes = ZERO_BI
+    user.voteParticipationPct = ZERO_BD
     user.save()
   }
   if (user == null) {

@@ -2,36 +2,64 @@ type Vote @entity {
   id: ID!
   org: LiquidDemocracy!
   department: Department!
-  creator: DepartmentMember!
+  creator: User!
+  createdByMember: DepartmentMember!
   metadata: String!
   executed: Boolean!
   startDate: BigInt!
   snapshotBlock: BigInt!
-  supportRequiredPct: BigInt!
-  minAcceptQuorum: BigInt!
+  supportRequiredPct: BigDecimal!
+  minAcceptQuorum: BigDecimal!
   yea: BigInt!
   nay: BigInt!
-  votingPower: BigInt!
   script: Bytes!
   voteNum: BigInt!
   numCasts: BigInt!
-  casts: [Cast!]! @derivedFrom(field: "vote")
+  casts: [Cast]!
+  numVoters: BigInt!
+  voters: [User]!
+  numPotentialVoters: BigInt!
+  potentialVoters: [User]!
+  votingMembers: [DepartmentMember]!
+  potentialVotingMembers: [DepartmentMember]!
+  voterParticipationPct: BigDecimal
+  sharesUsed: BigInt
+  sharesAvailable: BigInt!
+  shareUsagePct: BigDecimal
+  createdAtBlockNumber: BigInt!
+  createdAtTimestamp: BigInt!
+  createdAtTransaction: Bytes!
+  executedAtBlockNumber: BigInt
+  executedAtTimestamp: BigInt
+  executedAtTransaction: Bytes
 }
 
 type Cast @entity {
   id: ID!
+  org: LiquidDemocracy!
+  department: Department!
   vote: Vote!
   voteNum: BigInt!
-  voter: DepartmentMember!
+  voter: User!
+  member: DepartmentMember!
   supports: Boolean!
   voterStake: BigInt!
+  castAtBlockNumber: BigInt!
+  castAtTimestamp: BigInt!
+  castAtTransaction: Bytes!
 }
 
 type LiquidDemocracy @entity {
   id: ID!                              # orgAddress
+  name: String!
   departments: [Department]! @derivedFrom(field: "org")
   tokens: [Token]! @derivedFrom(field: "org")
   tokenManagers: [TokenManager]! @derivedFrom(field: "org")
+  votes: [Vote]! @derivedFrom(field: "org")
+  votesCast: [Cast]! @derivedFrom(field: "org")
+  createdAtBlockNumber: BigInt!
+  createdAtTimestamp: BigInt!
+  createdAtTransaction: Bytes!
 }
 
 type Token @entity {
@@ -46,31 +74,46 @@ type Token @entity {
 }
 
 type Department @entity {
-  id: ID!
+  id: ID! # App Address
   name: String!
   org: LiquidDemocracy!
   appId: String!
   token: Token!
-  supportRequiredPct: BigInt!
-  minAcceptQuorum: BigInt!
+  supportRequiredPct: BigDecimal!
+  minAcceptQuorum: BigDecimal!
   voteDuration: BigInt!
   votes: [Vote]! @derivedFrom(field: "department")
+  votesCast: [Cast]! @derivedFrom(field: "department")
   members: [DepartmentMember]!
   isManagement: Boolean!
   tokenManager: TokenManager! @derivedFrom(field: "department")
+  createdAtBlockNumber: BigInt!
+  createdAtTimestamp: BigInt!
+  createdAtTransaction: Bytes!
 }
 
 type TokenManager @entity {
-  id: ID!
+  id: ID! # App Address
+  appId: String!
   department: Department!
   org: LiquidDemocracy!
   token: Token!
+  createdAtBlockNumber: BigInt!
+  createdAtTimestamp: BigInt!
+  createdAtTransaction: Bytes!
 }
 
 type User @entity {
   id: ID! # Ethereum address
   orgs: [LiquidDemocracy]!
-  departments: [DepartmentMember]! @derivedFrom(field: "user")
+  departments: [Department]!
+  numVotesParticipated: BigInt!
+  numPotentialVotes: BigInt!
+  voteParticipationPct: BigDecimal!
+  memberships: [DepartmentMember]! @derivedFrom(field: "user")
+  votesCreated: [Vote]! @derivedFrom(field: "creator")
+  votesCast: [Cast]! @derivedFrom(field: "voter")
+  votesParticipated: [Vote]! @derivedFrom(field: "voters")
   currentDelegatedFrom: [DelegationBalance]! @derivedFrom(field: "fromUser")
   currentDelegatedTo: [DelegationBalance]! @derivedFrom(field: "toUser")
   delegatedFromHistory: [DelegationHistory]! @derivedFrom(field: "fromUser")
@@ -81,12 +124,17 @@ type DepartmentMember @entity {
   id: ID! # appAddress + "-" + Ethereum address
   user: User!
   department: Department!
+  currentTokenBalance: BigInt!
+  delegableBalance: BigInt!
   votingPower: BigInt!
   votingPowerPercent: BigDecimal!
-  currentTokenBalance: BigInt!
+  numVotesParticipated: BigInt!
+  numPotentialVotes: BigInt!
+  voteParticipationPct: BigDecimal!
   currentAmountDelegatedFrom: BigInt!
   currentAmountDelegatedTo: BigInt!
-  votesCast: [Cast]! @derivedFrom(field: "voter")
+  votesCreated: [Vote]! @derivedFrom(field: "createdByMember")
+  votesCast: [Cast]! @derivedFrom(field: "member")
   currentDelegatedFrom: [DelegationBalance]! @derivedFrom(field: "fromMember")
   currentDelegatedTo: [DelegationBalance]! @derivedFrom(field: "toMember")
   delegatedFromHistory: [DelegationHistory]! @derivedFrom(field: "fromMember")

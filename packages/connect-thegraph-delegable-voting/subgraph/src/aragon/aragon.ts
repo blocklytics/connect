@@ -1,12 +1,22 @@
-import { Address, DataSourceTemplate, log } from '@graphprotocol/graph-ts'
+import { Address, DataSourceTemplate, log, BigInt, Bytes } from '@graphprotocol/graph-ts'
 import { AragonInfo as AragonInfoEntity } from '../../generated/schema'
 import { Kernel as KernelTemplate } from '../../generated/templates'
 import * as hooks from '../aragon-hooks'
 
-export function processOrg(orgAddress: Address): void {
+export function processOrg(
+  orgAddress: Address, 
+  blockNumber: BigInt, 
+  blockTimestamp: BigInt, 
+  transaction: Bytes
+): void {
   if (!_isRegistered(orgAddress, 'org')) {
     KernelTemplate.create(orgAddress)
-    hooks.onOrgTemplateCreated(orgAddress)
+    hooks.onOrgTemplateCreated(
+      orgAddress,
+      blockNumber, 
+      blockTimestamp, 
+      transaction
+    )
 
     _registerEntity(orgAddress, 'org')
   }
@@ -17,17 +27,23 @@ export function processDepartment(
   deptAddress: Address,
   tokenManagerAddress: Address,
   tokenAddress: Address,
-  isMgmt: boolean
+  isMgmt: boolean,
+  blockNumber: BigInt, 
+  blockTimestamp: BigInt, 
+  transaction: Bytes
 ): void {
-  if (!_isRegistered(orgAddress, 'org')) {
-    KernelTemplate.create(orgAddress)
-    hooks.onOrgTemplateCreated(orgAddress)
-    _registerEntity(orgAddress, 'org')
-  }
-
   if (!_isRegistered(deptAddress, 'app')) {
       DataSourceTemplate.create('DelegableVoting', [deptAddress.toHexString()])
-      hooks.onDeptTemplateCreated(orgAddress, deptAddress, tokenManagerAddress, tokenAddress, isMgmt)
+      hooks.onDeptTemplateCreated(
+        orgAddress, 
+        deptAddress, 
+        tokenManagerAddress, 
+        tokenAddress, 
+        isMgmt,
+        blockNumber, 
+        blockTimestamp, 
+        transaction
+      )
 
     _registerEntity(deptAddress, 'app')
   }

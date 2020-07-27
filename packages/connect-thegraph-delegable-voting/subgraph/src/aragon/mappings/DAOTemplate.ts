@@ -8,12 +8,21 @@ import * as aragon from '../aragon'
 
 export function handleDeployDao(event: DeployDaoEvent): void {
   log.debug("Creating org: {}", [event.params.dao.toHexString()])
-  aragon.processOrg(event.params.dao)
+  aragon.processOrg(event.params.dao, event.block.number, event.block.timestamp, event.transaction.hash)
 }
 
 export function handleDepartmentCreated(event: DepartmentCreatedEvent): void {
   log.debug("Adding department: {}", [event.params.department.toHexString()])
-  aragon.processDepartment(event.params.org, event.params.department, event.params.tokenManager, event.params.token, event.params.isMgmt)
+  aragon.processDepartment(
+    event.params.org, 
+    event.params.department, 
+    event.params.tokenManager, 
+    event.params.token, 
+    event.params.isMgmt,
+    event.block.number, 
+    event.block.timestamp, 
+    event.transaction.hash
+  )
 }
 
 export function handleInstalledApp(event: InstalledAppEvent): void {
